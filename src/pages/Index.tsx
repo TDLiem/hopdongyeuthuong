@@ -37,6 +37,8 @@ interface HistoryEntry {
 
 const Index = () => {
   const [clauses, setClauses] = useState(defaultClauses);
+  const [rewards, setRewards] = useState(defaultRewards);
+  const [penalties, setPenalties] = useState(defaultPenalties);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const personA = "Trần Đức Liêm";
   const personB = "Tạ Quỳnh Trang";
