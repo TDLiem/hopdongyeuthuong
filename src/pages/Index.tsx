@@ -77,11 +77,6 @@ const Index = () => {
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
         <div className="text-center mb-8">
-          <img
-
-            alt="Cute couple"
-            className="w-28 h-28 mx-auto mb-4 animate-float object-contain" src="/lovable-uploads/16a323c0-fb8d-44f3-9b71-f81f7a4639e3.jpg" />
-          
           <h1 className="font-handwriting text-5xl sm:text-6xl text-primary font-bold mb-2">
             Hợp Đồng Yêu Thương
           </h1>
@@ -104,12 +99,17 @@ const Index = () => {
             {/* Preamble */}
             <div className="mb-8 pb-6 border-b border-dashed border-primary/20">
               <Sparkles className="mx-auto mb-3 text-accent text-center" size={28} />
-              <div className="grid grid-cols-2 gap-6 mb-4">
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-4 mb-4 items-center">
                 <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
                   <span className="text-2xl">💙</span>
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên A</span>
                   <p className="w-full text-center font-handwriting text-xl text-foreground">{personA}</p>
                 </div>
+                <img
+                  src="/lovable-uploads/16a323c0-fb8d-44f3-9b71-f81f7a4639e3.jpg"
+                  alt="Cute couple"
+                  className="w-24 h-24 rounded-full object-cover animate-float border-4 border-primary/20 shadow-lg"
+                />
                 <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
                   <span className="text-2xl">💗</span>
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên B</span>
