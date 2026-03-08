@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Plus, Trash2, Sparkles, Clock } from "lucide-react";
+import { Heart, Plus, Trash2, Sparkles, Clock, Gift, Gavel } from "lucide-react";
 import ContractClause from "@/components/ContractClause";
 import FloatingHearts from "@/components/FloatingHearts";
 import coupleImg from "@/assets/couple-illustration.png";
