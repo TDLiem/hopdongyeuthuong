@@ -102,7 +102,6 @@ const Index = () => {
                   <p className="w-full text-center font-handwriting text-xl text-foreground">{personB}</p>
                 </div>
               </div>
-              </div>
               <p className="font-handwriting text-lg text-foreground leading-relaxed text-center">
                 Hai bên đồng ý ký kết hợp đồng yêu thương này với tất cả tình yêu và sự chân thành 💕
               </p>
