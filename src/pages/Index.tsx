@@ -64,16 +64,16 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <img
-            src={coupleImg}
+
             alt="Cute couple"
-            className="w-28 h-28 mx-auto mb-4 animate-float" />
+            className="w-28 h-28 mx-auto mb-4 animate-float object-contain" src="/lovable-uploads/16a323c0-fb8d-44f3-9b71-f81f7a4639e3.jpg" />
           
           <h1 className="font-handwriting text-5xl sm:text-6xl text-primary font-bold mb-2">
             Hợp Đồng Yêu Thương
           </h1>
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
             <Heart size={14} fill="currentColor" className="text-primary" />
-            <span className="text-sm font-medium">{today}</span>
+            <span className="font-medium text-lg">{today}</span>
             <Heart size={14} fill="currentColor" className="text-primary" />
           </div>
         </div>
