@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Plus, Trash2, Sparkles, Clock, Gift, Gavel } from "lucide-react";
 import ContractClause from "@/components/ContractClause";
 import DraggableList from "@/components/DraggableList";
@@ -28,6 +28,10 @@ const defaultPenalties = [
 { emoji: "💌", text: "Vi phạm 3 lần → Phải viết thư tay xin lỗi dài 1 trang" },
 ];
 
+  useEffect(() => { localStorage.setItem("contract-clauses", JSON.stringify(clauses)); }, [clauses]);
+  useEffect(() => { localStorage.setItem("contract-rewards", JSON.stringify(rewards)); }, [rewards]);
+  useEffect(() => { localStorage.setItem("contract-penalties", JSON.stringify(penalties)); }, [penalties]);
+  useEffect(() => { localStorage.setItem("contract-history", JSON.stringify(history)); }, [history]);
 
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
 
