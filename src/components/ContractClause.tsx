@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Heart, Pencil, Check } from "lucide-react";
 
 interface ContractClauseProps {
@@ -11,14 +11,31 @@ interface ContractClauseProps {
 const ContractClause = ({ index, emoji, text, onUpdate }: ContractClauseProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSave = () => {
     onUpdate(editText);
     setIsEditing(false);
   };
 
+  const handleCancel = () => {
+    setEditText(text);
+    setIsEditing(false);
+  };
+
+  useEffect(() => {
+    if (!isEditing) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        handleCancel();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isEditing, text]);
+
   return (
-    <div className="group flex items-start gap-3 p-4 rounded-2xl bg-secondary/50 hover:bg-secondary transition-all duration-300 border border-border/50">
+    <div ref={containerRef} className="group flex items-start gap-3 p-4 rounded-2xl bg-secondary/50 hover:bg-secondary transition-all duration-300 border border-border/50">
       <span className="text-2xl mt-0.5 animate-float" style={{ animationDelay: `${index * 0.3}s` }}>
         {emoji}
       </span>
@@ -34,7 +51,10 @@ const ContractClause = ({ index, emoji, text, onUpdate }: ContractClauseProps) =
               onChange={(e) => setEditText(e.target.value)}
               className="flex-1 bg-card border border-input rounded-xl px-3 py-2 text-foreground font-handwriting text-lg focus:outline-none focus:ring-2 focus:ring-ring"
               autoFocus
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSave();
+                if (e.key === "Escape") handleCancel();
+              }}
             />
             <button
               onClick={handleSave}
