@@ -42,10 +42,22 @@ interface HistoryEntry {
 }
 
 const Index = () => {
-  const [clauses, setClauses] = useState(defaultClauses);
-  const [rewards, setRewards] = useState(defaultRewards);
-  const [penalties, setPenalties] = useState(defaultPenalties);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [clauses, setClauses] = useState<ClauseItem[]>(() => {
+    const saved = localStorage.getItem("contract-clauses");
+    return saved ? JSON.parse(saved) : defaultClauses;
+  });
+  const [rewards, setRewards] = useState<ClauseItem[]>(() => {
+    const saved = localStorage.getItem("contract-rewards");
+    return saved ? JSON.parse(saved) : defaultRewards;
+  });
+  const [penalties, setPenalties] = useState<ClauseItem[]>(() => {
+    const saved = localStorage.getItem("contract-penalties");
+    return saved ? JSON.parse(saved) : defaultPenalties;
+  });
+  const [history, setHistory] = useState<HistoryEntry[]>(() => {
+    const saved = localStorage.getItem("contract-history");
+    return saved ? JSON.parse(saved) : [];
+  });
   const personA = "Trần Đức Liêm";
   const personB = "Tạ Quỳnh Trang";
 
