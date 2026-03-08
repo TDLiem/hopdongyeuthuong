@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Heart, Plus, Trash2, Sparkles, Clock, Gift, Gavel } from "lucide-react";
 import ContractClause from "@/components/ContractClause";
+import DraggableList from "@/components/DraggableList";
 import FloatingHearts from "@/components/FloatingHearts";
 import coupleImg from "@/assets/couple-illustration.png";
 import borderImg from "@/assets/contract-border.png";
@@ -29,6 +30,11 @@ const defaultPenalties = [
 
 
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
+
+interface ClauseItem {
+  emoji: string;
+  text: string;
+}
 
 interface HistoryEntry {
   action: string;
@@ -128,24 +134,31 @@ const Index = () => {
                 Các Điều Khoản
               </h2>
 
-              {clauses.map((clause, index) =>
-              <div key={index} className="relative group">
-                  <ContractClause
-                  index={index}
-                  emoji={clause.emoji}
-                  text={clause.text}
-                  onUpdate={(text) => updateClause(index, text)} />
-                
-                  {clauses.length > 1 &&
-                <button
-                  onClick={() => removeClause(index)}
-                  className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
-                  
-                      <Trash2 size={12} />
-                    </button>
-                }
-                </div>
-              )}
+              <DraggableList<ClauseItem>
+                items={clauses}
+                onReorder={(newItems, from, to) => {
+                  setClauses(newItems);
+                  addHistoryEntry(`Điều khoản ${from + 1} → ${to + 1}`);
+                }}
+                renderItem={(clause, index) => (
+                  <div className="relative group">
+                    <ContractClause
+                      index={index}
+                      emoji={clause.emoji}
+                      text={clause.text}
+                      onUpdate={(text) => updateClause(index, text)}
+                    />
+                    {clauses.length > 1 && (
+                      <button
+                        onClick={() => removeClause(index)}
+                        className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              />
 
               <button
                 onClick={addClause}
@@ -167,28 +180,37 @@ const Index = () => {
                 <h3 className="font-handwriting text-lg text-accent font-semibold flex items-center gap-1.5">
                   🏆 Phần thưởng
                 </h3>
-                {rewards.map((item, index) => (
-                  <div key={index} className="relative group">
-                    <ContractClause
-                      index={index}
-                      emoji={item.emoji}
-                      text={item.text}
-                      onUpdate={(text) => {
-                        setRewards((prev) => prev.map((r, i) => i === index ? { ...r, text } : r));
-                        addHistoryEntry(`Sửa phần thưởng ${index + 1}`);
-                      }} />
-                    {rewards.length > 1 &&
-                      <button
-                        onClick={() => {
-                          setRewards((prev) => prev.filter((_, i) => i !== index));
-                          addHistoryEntry(`Xóa phần thưởng ${index + 1}`);
+                <DraggableList<ClauseItem>
+                  items={rewards}
+                  onReorder={(newItems, from, to) => {
+                    setRewards(newItems);
+                    addHistoryEntry(`Phần thưởng ${from + 1} → ${to + 1}`);
+                  }}
+                  renderItem={(item, index) => (
+                    <div className="relative group">
+                      <ContractClause
+                        index={index}
+                        emoji={item.emoji}
+                        text={item.text}
+                        onUpdate={(text) => {
+                          setRewards((prev) => prev.map((r, i) => i === index ? { ...r, text } : r));
+                          addHistoryEntry(`Sửa phần thưởng ${index + 1}`);
                         }}
-                        className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
-                        <Trash2 size={12} />
-                      </button>
-                    }
-                  </div>
-                ))}
+                      />
+                      {rewards.length > 1 && (
+                        <button
+                          onClick={() => {
+                            setRewards((prev) => prev.filter((_, i) => i !== index));
+                            addHistoryEntry(`Xóa phần thưởng ${index + 1}`);
+                          }}
+                          className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                />
                 <button
                   onClick={() => {
                     const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
@@ -205,28 +227,37 @@ const Index = () => {
                 <h3 className="font-handwriting text-lg text-destructive font-semibold flex items-center gap-1.5">
                   ⚖️ Chế tài
                 </h3>
-                {penalties.map((item, index) => (
-                  <div key={index} className="relative group">
-                    <ContractClause
-                      index={index}
-                      emoji={item.emoji}
-                      text={item.text}
-                      onUpdate={(text) => {
-                        setPenalties((prev) => prev.map((p, i) => i === index ? { ...p, text } : p));
-                        addHistoryEntry(`Sửa chế tài ${index + 1}`);
-                      }} />
-                    {penalties.length > 1 &&
-                      <button
-                        onClick={() => {
-                          setPenalties((prev) => prev.filter((_, i) => i !== index));
-                          addHistoryEntry(`Xóa chế tài ${index + 1}`);
+                <DraggableList<ClauseItem>
+                  items={penalties}
+                  onReorder={(newItems, from, to) => {
+                    setPenalties(newItems);
+                    addHistoryEntry(`Chế tài ${from + 1} → ${to + 1}`);
+                  }}
+                  renderItem={(item, index) => (
+                    <div className="relative group">
+                      <ContractClause
+                        index={index}
+                        emoji={item.emoji}
+                        text={item.text}
+                        onUpdate={(text) => {
+                          setPenalties((prev) => prev.map((p, i) => i === index ? { ...p, text } : p));
+                          addHistoryEntry(`Sửa chế tài ${index + 1}`);
                         }}
-                        className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
-                        <Trash2 size={12} />
-                      </button>
-                    }
-                  </div>
-                ))}
+                      />
+                      {penalties.length > 1 && (
+                        <button
+                          onClick={() => {
+                            setPenalties((prev) => prev.filter((_, i) => i !== index));
+                            addHistoryEntry(`Xóa chế tài ${index + 1}`);
+                          }}
+                          className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                />
                 <button
                   onClick={() => {
                     const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
