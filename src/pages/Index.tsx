@@ -22,6 +22,10 @@ const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "�
 const Index = () => {
   const [clauses, setClauses] = useState(defaultClauses);
   const [signatures, setSignatures] = useState<{ person1?: string; person2?: string }>({});
+  const [personA, setPersonA] = useState("");
+  const [nicknameA, setNicknameA] = useState("");
+  const [personB, setPersonB] = useState("");
+  const [nicknameB, setNicknameB] = useState("");
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "numeric",
     month: "long",
@@ -75,10 +79,48 @@ const Index = () => {
 
           <div className="bg-card/80 backdrop-blur-sm rounded-3xl border-2 border-primary/20 shadow-xl p-6 sm:p-8 relative">
             {/* Preamble */}
-            <div className="text-center mb-8 pb-6 border-b border-dashed border-primary/20">
-              <Sparkles className="mx-auto mb-3 text-accent" size={28} />
-              <p className="font-handwriting text-xl text-foreground leading-relaxed">
-                Hai bên đồng ý ký kết hợp đồng yêu thương này với tất cả tình yêu, sự chân thành và cam kết sẽ luôn bên nhau dù bất cứ điều gì xảy ra 💕
+            <div className="mb-8 pb-6 border-b border-dashed border-primary/20">
+              <Sparkles className="mx-auto mb-3 text-accent text-center" size={28} />
+              <div className="grid grid-cols-2 gap-6 mb-4">
+                <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
+                  <span className="text-2xl">💙</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên A</span>
+                  <input
+                    type="text"
+                    placeholder="Tên bên A..."
+                    value={personA}
+                    onChange={(e) => setPersonA(e.target.value)}
+                    className="w-full text-center bg-transparent border-b-2 border-dashed border-primary/40 focus:border-primary px-2 py-1 font-handwriting text-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-colors"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Biệt danh..."
+                    value={nicknameA}
+                    onChange={(e) => setNicknameA(e.target.value)}
+                    className="w-full text-center bg-transparent border-b border-dashed border-primary/30 focus:border-primary px-2 py-1 text-sm text-muted-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors"
+                  />
+                </div>
+                <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
+                  <span className="text-2xl">💗</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên B</span>
+                  <input
+                    type="text"
+                    placeholder="Tên bên B..."
+                    value={personB}
+                    onChange={(e) => setPersonB(e.target.value)}
+                    className="w-full text-center bg-transparent border-b-2 border-dashed border-primary/40 focus:border-primary px-2 py-1 font-handwriting text-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-colors"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Biệt danh..."
+                    value={nicknameB}
+                    onChange={(e) => setNicknameB(e.target.value)}
+                    className="w-full text-center bg-transparent border-b border-dashed border-primary/30 focus:border-primary px-2 py-1 text-sm text-muted-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors"
+                  />
+                </div>
+              </div>
+              <p className="font-handwriting text-lg text-foreground leading-relaxed text-center">
+                Hai bên đồng ý ký kết hợp đồng yêu thương này với tất cả tình yêu và sự chân thành 💕
               </p>
             </div>
 
