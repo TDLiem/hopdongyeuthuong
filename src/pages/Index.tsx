@@ -15,6 +15,18 @@ const defaultClauses = [
 { emoji: "🎁", text: "Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau" },
 { emoji: "🌈", text: "Luôn nói \"Anh/Em yêu em/anh\" mỗi ngày, không bao giờ quên" }];
 
+const defaultRewards = [
+{ emoji: "🎉", text: "Thực hiện tốt 1 tuần → Được đi ăn món yêu thích" },
+{ emoji: "🧸", text: "Thực hiện tốt 1 tháng → Được tặng quà bất ngờ" },
+{ emoji: "✈️", text: "Thực hiện tốt 3 tháng → Cùng nhau đi du lịch" },
+];
+
+const defaultPenalties = [
+{ emoji: "🧹", text: "Vi phạm 1 lần → Phải làm việc nhà 1 ngày" },
+{ emoji: "🍦", text: "Vi phạm 2 lần → Phải mua kem/trà sữa cho đối phương" },
+{ emoji: "💌", text: "Vi phạm 3 lần → Phải viết thư tay xin lỗi dài 1 trang" },
+];
+
 
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
 
