@@ -156,6 +156,89 @@ const Index = () => {
               </button>
             </div>
 
+            {/* Rewards & Penalties */}
+            <div className="space-y-3 mb-8">
+              <h2 className="font-handwriting text-2xl text-primary font-semibold flex items-center gap-2">
+                <Gift size={20} />
+                Phần Thưởng & Chế Tài
+              </h2>
+
+              <div className="space-y-2">
+                <h3 className="font-handwriting text-lg text-accent font-semibold flex items-center gap-1.5">
+                  🏆 Phần thưởng
+                </h3>
+                {rewards.map((item, index) => (
+                  <div key={index} className="relative group">
+                    <ContractClause
+                      index={index}
+                      emoji={item.emoji}
+                      text={item.text}
+                      onUpdate={(text) => {
+                        setRewards((prev) => prev.map((r, i) => i === index ? { ...r, text } : r));
+                        addHistoryEntry(`Sửa phần thưởng ${index + 1}`);
+                      }} />
+                    {rewards.length > 1 &&
+                      <button
+                        onClick={() => {
+                          setRewards((prev) => prev.filter((_, i) => i !== index));
+                          addHistoryEntry(`Xóa phần thưởng ${index + 1}`);
+                        }}
+                        className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
+                        <Trash2 size={12} />
+                      </button>
+                    }
+                  </div>
+                ))}
+                <button
+                  onClick={() => {
+                    const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+                    setRewards((prev) => [...prev, { emoji: randomEmoji, text: "Nhập phần thưởng mới..." }]);
+                    addHistoryEntry("Thêm phần thưởng mới");
+                  }}
+                  className="w-full p-2.5 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium text-sm">
+                  <Plus size={16} />
+                  Thêm phần thưởng
+                </button>
+              </div>
+
+              <div className="space-y-2 mt-4">
+                <h3 className="font-handwriting text-lg text-destructive font-semibold flex items-center gap-1.5">
+                  ⚖️ Chế tài
+                </h3>
+                {penalties.map((item, index) => (
+                  <div key={index} className="relative group">
+                    <ContractClause
+                      index={index}
+                      emoji={item.emoji}
+                      text={item.text}
+                      onUpdate={(text) => {
+                        setPenalties((prev) => prev.map((p, i) => i === index ? { ...p, text } : p));
+                        addHistoryEntry(`Sửa chế tài ${index + 1}`);
+                      }} />
+                    {penalties.length > 1 &&
+                      <button
+                        onClick={() => {
+                          setPenalties((prev) => prev.filter((_, i) => i !== index));
+                          addHistoryEntry(`Xóa chế tài ${index + 1}`);
+                        }}
+                        className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
+                        <Trash2 size={12} />
+                      </button>
+                    }
+                  </div>
+                ))}
+                <button
+                  onClick={() => {
+                    const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+                    setPenalties((prev) => [...prev, { emoji: randomEmoji, text: "Nhập chế tài mới..." }]);
+                    addHistoryEntry("Thêm chế tài mới");
+                  }}
+                  className="w-full p-2.5 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium text-sm">
+                  <Plus size={16} />
+                  Thêm chế tài
+                </button>
+              </div>
+
             {/* Update History */}
             <div className="border-t-2 border-dashed border-primary/20 pt-8">
               <h2 className="font-handwriting text-2xl text-primary font-semibold text-center mb-6 flex items-center justify-center gap-2">
