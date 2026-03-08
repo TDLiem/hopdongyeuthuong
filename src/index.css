@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -43,7 +43,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Nunito', sans-serif;
   }
 }
 
@@ -66,5 +66,5 @@
 }
 
 .font-handwriting {
-  font-family: 'Caveat', cursive;
+  font-family: 'Dancing Script', cursive;
 }
