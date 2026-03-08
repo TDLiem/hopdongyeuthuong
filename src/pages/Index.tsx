@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Plus, Trash2, Sparkles, Clock } from "lucide-react";
+import { Heart, Plus, Trash2, Sparkles, Clock, Gift, Gavel } from "lucide-react";
 import ContractClause from "@/components/ContractClause";
 import FloatingHearts from "@/components/FloatingHearts";
 import coupleImg from "@/assets/couple-illustration.png";
@@ -15,6 +15,18 @@ const defaultClauses = [
 { emoji: "🎁", text: "Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau" },
 { emoji: "🌈", text: "Luôn nói \"Anh/Em yêu em/anh\" mỗi ngày, không bao giờ quên" }];
 
+const defaultRewards = [
+{ emoji: "🎉", text: "Thực hiện tốt 1 tuần → Được đi ăn món yêu thích" },
+{ emoji: "🧸", text: "Thực hiện tốt 1 tháng → Được tặng quà bất ngờ" },
+{ emoji: "✈️", text: "Thực hiện tốt 3 tháng → Cùng nhau đi du lịch" },
+];
+
+const defaultPenalties = [
+{ emoji: "🧹", text: "Vi phạm 1 lần → Phải làm việc nhà 1 ngày" },
+{ emoji: "🍦", text: "Vi phạm 2 lần → Phải mua kem/trà sữa cho đối phương" },
+{ emoji: "💌", text: "Vi phạm 3 lần → Phải viết thư tay xin lỗi dài 1 trang" },
+];
+
 
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
 
@@ -25,6 +37,8 @@ interface HistoryEntry {
 
 const Index = () => {
   const [clauses, setClauses] = useState(defaultClauses);
+  const [rewards, setRewards] = useState(defaultRewards);
+  const [penalties, setPenalties] = useState(defaultPenalties);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const personA = "Trần Đức Liêm";
   const personB = "Tạ Quỳnh Trang";
@@ -140,6 +154,90 @@ const Index = () => {
                 <Plus size={18} />
                 Thêm điều khoản mới
               </button>
+            </div>
+
+            {/* Rewards & Penalties */}
+            <div className="space-y-3 mb-8">
+              <h2 className="font-handwriting text-2xl text-primary font-semibold flex items-center gap-2">
+                <Gift size={20} />
+                Phần Thưởng & Chế Tài
+              </h2>
+
+              <div className="space-y-2">
+                <h3 className="font-handwriting text-lg text-accent font-semibold flex items-center gap-1.5">
+                  🏆 Phần thưởng
+                </h3>
+                {rewards.map((item, index) => (
+                  <div key={index} className="relative group">
+                    <ContractClause
+                      index={index}
+                      emoji={item.emoji}
+                      text={item.text}
+                      onUpdate={(text) => {
+                        setRewards((prev) => prev.map((r, i) => i === index ? { ...r, text } : r));
+                        addHistoryEntry(`Sửa phần thưởng ${index + 1}`);
+                      }} />
+                    {rewards.length > 1 &&
+                      <button
+                        onClick={() => {
+                          setRewards((prev) => prev.filter((_, i) => i !== index));
+                          addHistoryEntry(`Xóa phần thưởng ${index + 1}`);
+                        }}
+                        className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
+                        <Trash2 size={12} />
+                      </button>
+                    }
+                  </div>
+                ))}
+                <button
+                  onClick={() => {
+                    const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+                    setRewards((prev) => [...prev, { emoji: randomEmoji, text: "Nhập phần thưởng mới..." }]);
+                    addHistoryEntry("Thêm phần thưởng mới");
+                  }}
+                  className="w-full p-2.5 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium text-sm">
+                  <Plus size={16} />
+                  Thêm phần thưởng
+                </button>
+              </div>
+
+              <div className="space-y-2 mt-4">
+                <h3 className="font-handwriting text-lg text-destructive font-semibold flex items-center gap-1.5">
+                  ⚖️ Chế tài
+                </h3>
+                {penalties.map((item, index) => (
+                  <div key={index} className="relative group">
+                    <ContractClause
+                      index={index}
+                      emoji={item.emoji}
+                      text={item.text}
+                      onUpdate={(text) => {
+                        setPenalties((prev) => prev.map((p, i) => i === index ? { ...p, text } : p));
+                        addHistoryEntry(`Sửa chế tài ${index + 1}`);
+                      }} />
+                    {penalties.length > 1 &&
+                      <button
+                        onClick={() => {
+                          setPenalties((prev) => prev.filter((_, i) => i !== index));
+                          addHistoryEntry(`Xóa chế tài ${index + 1}`);
+                        }}
+                        className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
+                        <Trash2 size={12} />
+                      </button>
+                    }
+                  </div>
+                ))}
+                <button
+                  onClick={() => {
+                    const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+                    setPenalties((prev) => [...prev, { emoji: randomEmoji, text: "Nhập chế tài mới..." }]);
+                    addHistoryEntry("Thêm chế tài mới");
+                  }}
+                  className="w-full p-2.5 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium text-sm">
+                  <Plus size={16} />
+                  Thêm chế tài
+                </button>
+              </div>
             </div>
 
             {/* Update History */}
