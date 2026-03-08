@@ -85,38 +85,14 @@ const Index = () => {
                 <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
                   <span className="text-2xl">💙</span>
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên A</span>
-                  <input
-                    type="text"
-                    placeholder="Tên bên A..."
-                    value={personA}
-                    onChange={(e) => setPersonA(e.target.value)}
-                    className="w-full text-center bg-transparent border-b-2 border-dashed border-primary/40 focus:border-primary px-2 py-1 font-handwriting text-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-colors"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Biệt danh..."
-                    value={nicknameA}
-                    onChange={(e) => setNicknameA(e.target.value)}
-                    className="w-full text-center bg-transparent border-b border-dashed border-primary/30 focus:border-primary px-2 py-1 text-sm text-muted-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors"
-                  />
+                  <p className="w-full text-center font-handwriting text-xl text-foreground">{personA}</p>
+                  {nicknameA && <p className="text-sm text-muted-foreground">{nicknameA}</p>}
                 </div>
                 <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
                   <span className="text-2xl">💗</span>
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên B</span>
-                  <input
-                    type="text"
-                    placeholder="Tên bên B..."
-                    value={personB}
-                    onChange={(e) => setPersonB(e.target.value)}
-                    className="w-full text-center bg-transparent border-b-2 border-dashed border-primary/40 focus:border-primary px-2 py-1 font-handwriting text-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-colors"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Biệt danh..."
-                    value={nicknameB}
-                    onChange={(e) => setNicknameB(e.target.value)}
-                    className="w-full text-center bg-transparent border-b border-dashed border-primary/30 focus:border-primary px-2 py-1 text-sm text-muted-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors"
-                  />
+                  <p className="w-full text-center font-handwriting text-xl text-foreground">{personB}</p>
+                  {nicknameB && <p className="text-sm text-muted-foreground">{nicknameB}</p>}
                 </div>
               </div>
               <p className="font-handwriting text-lg text-foreground leading-relaxed text-center">
