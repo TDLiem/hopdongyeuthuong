@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { Heart, Plus, Trash2, Sparkles } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Heart, Plus, Trash2, Sparkles, Check } from "lucide-react";
 import ContractClause from "@/components/ContractClause";
-import SignaturePad from "@/components/SignaturePad";
 import FloatingHearts from "@/components/FloatingHearts";
 import coupleImg from "@/assets/couple-illustration.png";
 import borderImg from "@/assets/contract-border.png";
@@ -14,23 +13,80 @@ const defaultClauses = [
   { emoji: "💌", text: "Không bao giờ đi ngủ khi đang giận nhau" },
   { emoji: "🌙", text: "Chúc nhau ngủ ngon mỗi tối, kể cả khi xa nhau" },
   { emoji: "🎁", text: "Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau" },
-  { emoji: "🌈", text: "Luôn nói \"Anh/Em yêu em/anh\" mỗi ngày, không bao giờ quên" },
+  { emoji: "🌈", text: 'Luôn nói "Anh/Em yêu em/anh" mỗi ngày, không bao giờ quên' },
 ];
 
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
 
+interface ChangeLog {
+  person: "A" | "B";
+  description: string;
+  time: string;
+}
+
 const Index = () => {
   const [clauses, setClauses] = useState(defaultClauses);
-  const [signatures, setSignatures] = useState<{ person1?: string; person2?: string }>({});
-  const [personA, setPersonA] = useState("Trần Đức Liêm");
-  const [nicknameA, setNicknameA] = useState("");
-  const [personB, setPersonB] = useState("Tạ Quỳnh Trang");
-  const [nicknameB, setNicknameB] = useState("");
+  const [approvedClauses, setApprovedClauses] = useState(defaultClauses);
+  const [personA] = useState("Trần Đức Liêm");
+  const [nicknameA] = useState("");
+  const [personB] = useState("Tạ Quỳnh Trang");
+  const [nicknameB] = useState("");
+  const [logsA, setLogsA] = useState<ChangeLog[]>([]);
+  const [logsB, setLogsB] = useState<ChangeLog[]>([]);
+
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
+
+  const hasPendingChanges = useMemo(() => {
+    if (clauses.length !== approvedClauses.length) return true;
+    return clauses.some(
+      (c, i) => c.text !== approvedClauses[i]?.text || c.emoji !== approvedClauses[i]?.emoji
+    );
+  }, [clauses, approvedClauses]);
+
+  const getChangesDescription = (): string[] => {
+    const changes: string[] = [];
+    const maxLen = Math.max(clauses.length, approvedClauses.length);
+    for (let i = 0; i < maxLen; i++) {
+      if (!approvedClauses[i] && clauses[i]) {
+        changes.push(`Thêm: "${clauses[i].text.slice(0, 30)}..."`);
+      } else if (approvedClauses[i] && !clauses[i]) {
+        changes.push(`Xóa: "${approvedClauses[i].text.slice(0, 30)}..."`);
+      } else if (clauses[i]?.text !== approvedClauses[i]?.text) {
+        changes.push(`Sửa điều ${i + 1}: "${clauses[i].text.slice(0, 30)}..."`);
+      }
+    }
+    return changes.length > 0 ? changes : ["Không có thay đổi"];
+  };
+
+  const formatTime = () =>
+    new Date().toLocaleString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    });
+
+  const handleApprove = (person: "A" | "B") => {
+    if (!hasPendingChanges) return;
+    const changes = getChangesDescription();
+    const time = formatTime();
+    const newLog: ChangeLog = {
+      person,
+      description: changes.join("; "),
+      time,
+    };
+    if (person === "A") {
+      setLogsA((prev) => [newLog, ...prev]);
+    } else {
+      setLogsB((prev) => [newLog, ...prev]);
+    }
+    setApprovedClauses([...clauses]);
+  };
 
   const updateClause = (index: number, text: string) => {
     setClauses((prev) => prev.map((c, i) => (i === index ? { ...c, text } : c)));
@@ -45,7 +101,7 @@ const Index = () => {
     setClauses((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const bothSigned = signatures.person1 && signatures.person2;
+  const bothApproved = logsA.length > 0 && logsB.length > 0;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -54,11 +110,7 @@ const Index = () => {
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
         <div className="text-center mb-8">
-          <img
-            src={coupleImg}
-            alt="Cute couple"
-            className="w-28 h-28 mx-auto mb-4 animate-float"
-          />
+          <img src={coupleImg} alt="Cute couple" className="w-28 h-28 mx-auto mb-4 animate-float" />
           <h1 className="font-handwriting text-5xl sm:text-6xl text-primary font-bold mb-2">
             Hợp Đồng Yêu Thương
           </h1>
@@ -107,6 +159,12 @@ const Index = () => {
                 Các Điều Khoản
               </h2>
 
+              {hasPendingChanges && (
+                <div className="text-xs text-accent font-medium bg-accent/10 rounded-xl px-3 py-2 text-center">
+                  ⚠️ Có thay đổi chưa được duyệt — cần cả hai bên xác nhận bên dưới
+                </div>
+              )}
+
               {clauses.map((clause, index) => (
                 <div key={index} className="relative group">
                   <ContractClause
@@ -135,26 +193,69 @@ const Index = () => {
               </button>
             </div>
 
-            {/* Signatures */}
+            {/* Approval Section */}
             <div className="border-t-2 border-dashed border-primary/20 pt-8">
               <h2 className="font-handwriting text-2xl text-primary font-semibold text-center mb-6 flex items-center justify-center gap-2">
                 <Heart size={20} fill="currentColor" />
-                Chữ Ký
+                Xác Nhận Thay Đổi
                 <Heart size={20} fill="currentColor" />
               </h2>
 
-              <div className="grid grid-cols-2 gap-8">
-                <SignaturePad
-                  label="Bên A (Anh/Em) 💙"
-                  onSign={(name) => setSignatures((s) => ({ ...s, person1: name }))}
-                />
-                <SignaturePad
-                  label="Bên B (Anh/Em) 💗"
-                  onSign={(name) => setSignatures((s) => ({ ...s, person2: name }))}
-                />
+              <div className="grid grid-cols-2 gap-6">
+                {/* Bên A */}
+                <div className="flex flex-col items-center gap-3">
+                  <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    💙 {personA}
+                  </span>
+                  <button
+                    onClick={() => handleApprove("A")}
+                    disabled={!hasPendingChanges}
+                    className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-all flex items-center gap-2"
+                  >
+                    <Check size={16} />
+                    Đồng ý thay đổi
+                  </button>
+                  {logsA.length > 0 && (
+                    <div className="w-full mt-2 space-y-1.5 max-h-32 overflow-y-auto">
+                      {logsA.map((log, i) => (
+                        <div key={i} className="text-[10px] text-muted-foreground bg-secondary/30 rounded-lg px-2.5 py-1.5">
+                          <span className="font-semibold">{log.time}</span>
+                          <br />
+                          {log.description}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Bên B */}
+                <div className="flex flex-col items-center gap-3">
+                  <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    💗 {personB}
+                  </span>
+                  <button
+                    onClick={() => handleApprove("B")}
+                    disabled={!hasPendingChanges}
+                    className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-all flex items-center gap-2"
+                  >
+                    <Check size={16} />
+                    Đồng ý thay đổi
+                  </button>
+                  {logsB.length > 0 && (
+                    <div className="w-full mt-2 space-y-1.5 max-h-32 overflow-y-auto">
+                      {logsB.map((log, i) => (
+                        <div key={i} className="text-[10px] text-muted-foreground bg-secondary/30 rounded-lg px-2.5 py-1.5">
+                          <span className="font-semibold">{log.time}</span>
+                          <br />
+                          {log.description}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {bothSigned && (
+              {bothApproved && (
                 <div className="mt-8 text-center animate-float">
                   <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-6 py-3">
                     <Sparkles className="text-primary" size={18} />
