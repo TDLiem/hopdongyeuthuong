@@ -108,7 +108,7 @@ const Index = () => {
                 <img
                   src="/lovable-uploads/16a323c0-fb8d-44f3-9b71-f81f7a4639e3.jpg"
                   alt="Cute couple"
-                  className="w-24 h-24 rounded-full object-cover animate-float border-4 border-primary/20 shadow-lg"
+                  className="w-24 h-24 rounded-full object-cover object-top animate-float border-4 border-primary/20 shadow-lg"
                 />
                 <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
                   <span className="text-2xl">💗</span>
