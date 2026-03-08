@@ -6,15 +6,15 @@ import coupleImg from "@/assets/couple-illustration.png";
 import borderImg from "@/assets/contract-border.png";
 
 const defaultClauses = [
-  { emoji: "💕", text: "Luôn lắng nghe và thấu hiểu nhau, dù bất đồng cũng không la mắng" },
-  { emoji: "🌅", text: "Mỗi sáng thức dậy sẽ nhắn tin chúc ngày mới tốt lành" },
-  { emoji: "🫂", text: "Ôm nhau ít nhất 3 lần mỗi ngày (hoặc nhiều hơn càng tốt!)" },
-  { emoji: "🍽️", text: "Mỗi tuần cùng nhau nấu ít nhất 1 bữa ăn ngon" },
-  { emoji: "💌", text: "Không bao giờ đi ngủ khi đang giận nhau" },
-  { emoji: "🌙", text: "Chúc nhau ngủ ngon mỗi tối, kể cả khi xa nhau" },
-  { emoji: "🎁", text: "Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau" },
-  { emoji: "🌈", text: "Luôn nói \"Anh/Em yêu em/anh\" mỗi ngày, không bao giờ quên" },
-];
+{ emoji: "💕", text: "Luôn lắng nghe và thấu hiểu nhau, dù bất đồng cũng không la mắng" },
+{ emoji: "🌅", text: "Mỗi sáng thức dậy sẽ nhắn tin chúc ngày mới tốt lành" },
+{ emoji: "🫂", text: "Ôm nhau ít nhất 3 lần mỗi ngày (hoặc nhiều hơn càng tốt!)" },
+{ emoji: "🍽️", text: "Mỗi tuần cùng nhau nấu ít nhất 1 bữa ăn ngon" },
+{ emoji: "💌", text: "Không bao giờ đi ngủ khi đang giận nhau" },
+{ emoji: "🌙", text: "Chúc nhau ngủ ngon mỗi tối, kể cả khi xa nhau" },
+{ emoji: "🎁", text: "Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau" },
+{ emoji: "🌈", text: "Luôn nói \"Anh/Em yêu em/anh\" mỗi ngày, không bao giờ quên" }];
+
 
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
 
@@ -28,11 +28,11 @@ const Index = () => {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const personA = "Trần Đức Liêm";
   const personB = "Tạ Quỳnh Trang";
-  
+
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "numeric",
     month: "long",
-    year: "numeric",
+    year: "numeric"
   });
 
   const addHistoryEntry = (action: string) => {
@@ -41,7 +41,7 @@ const Index = () => {
   };
 
   const updateClause = (index: number, text: string) => {
-    setClauses((prev) => prev.map((c, i) => (i === index ? { ...c, text } : c)));
+    setClauses((prev) => prev.map((c, i) => i === index ? { ...c, text } : c));
     addHistoryEntry(`Sửa điều khoản ${index + 1}`);
   };
 
@@ -66,8 +66,8 @@ const Index = () => {
           <img
             src={coupleImg}
             alt="Cute couple"
-            className="w-28 h-28 mx-auto mb-4 animate-float"
-          />
+            className="w-28 h-28 mx-auto mb-4 animate-float" />
+          
           <h1 className="font-handwriting text-5xl sm:text-6xl text-primary font-bold mb-2">
             Hợp Đồng Yêu Thương
           </h1>
@@ -83,8 +83,8 @@ const Index = () => {
           <img
             src={borderImg}
             alt=""
-            className="absolute inset-0 w-full h-full object-contain opacity-20 pointer-events-none"
-          />
+            className="absolute inset-0 w-full h-full object-contain opacity-20 pointer-events-none" />
+          
 
           <div className="bg-card/80 backdrop-blur-sm rounded-3xl border-2 border-primary/20 shadow-xl p-6 sm:p-8 relative">
             {/* Preamble */}
@@ -103,7 +103,7 @@ const Index = () => {
                 </div>
               </div>
               <p className="font-handwriting text-lg text-foreground leading-relaxed text-center">
-                Hai bên đồng ý ký kết hợp đồng yêu thương này với tất cả tình yêu và sự chân thành 💕
+                Hai bên đồng ý ký kết hợp đồng yêu thương với những nội dung sau💕
               </p>
             </div>
 
@@ -114,29 +114,29 @@ const Index = () => {
                 Các Điều Khoản
               </h2>
 
-              {clauses.map((clause, index) => (
-                <div key={index} className="relative group">
+              {clauses.map((clause, index) =>
+              <div key={index} className="relative group">
                   <ContractClause
-                    index={index}
-                    emoji={clause.emoji}
-                    text={clause.text}
-                    onUpdate={(text) => updateClause(index, text)}
-                  />
-                  {clauses.length > 1 && (
-                    <button
-                      onClick={() => removeClause(index)}
-                      className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all"
-                    >
+                  index={index}
+                  emoji={clause.emoji}
+                  text={clause.text}
+                  onUpdate={(text) => updateClause(index, text)} />
+                
+                  {clauses.length > 1 &&
+                <button
+                  onClick={() => removeClause(index)}
+                  className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all">
+                  
                       <Trash2 size={12} />
                     </button>
-                  )}
+                }
                 </div>
-              ))}
+              )}
 
               <button
                 onClick={addClause}
-                className="w-full p-3 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium"
-              >
+                className="w-full p-3 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium">
+                
                 <Plus size={18} />
                 Thêm điều khoản mới
               </button>
@@ -150,21 +150,21 @@ const Index = () => {
                 <Clock size={20} />
               </h2>
 
-              {history.length > 0 ? (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {history.map((entry, index) => (
-                    <div key={index} className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/30 rounded-lg px-3 py-2">
+              {history.length > 0 ?
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {history.map((entry, index) =>
+                <div key={index} className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/30 rounded-lg px-3 py-2">
                       <span className="text-primary">•</span>
                       <span className="flex-1">{entry.action}</span>
                       <span className="text-[10px] opacity-70">{entry.timestamp}</span>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-xs text-muted-foreground italic">
+                )}
+                </div> :
+
+              <p className="text-center text-xs text-muted-foreground italic">
                   Chưa có thay đổi nào được ghi nhận 💕
                 </p>
-              )}
+              }
             </div>
           </div>
         </div>
@@ -174,8 +174,8 @@ const Index = () => {
           ✨ Click vào từng điều khoản để chỉnh sửa • Thêm hoặc xóa tùy ý ✨
         </p>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Index;
