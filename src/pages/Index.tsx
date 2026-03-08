@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Heart, Plus, Trash2, Sparkles } from "lucide-react";
+import { Heart, Plus, Trash2, Sparkles, Clock } from "lucide-react";
 import ContractClause from "@/components/ContractClause";
-import SignaturePad from "@/components/SignaturePad";
 import FloatingHearts from "@/components/FloatingHearts";
 import coupleImg from "@/assets/couple-illustration.png";
 import borderImg from "@/assets/contract-border.png";
@@ -19,12 +18,16 @@ const defaultClauses = [
 
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
 
+interface HistoryEntry {
+  action: string;
+  timestamp: string;
+}
+
 const Index = () => {
   const [clauses, setClauses] = useState(defaultClauses);
-  const [signatures, setSignatures] = useState<{ person1?: string; person2?: string }>({});
-  const [personA, setPersonA] = useState("Trần Đức Liêm");
-  const [nicknameA, setNicknameA] = useState("");
-  const [personB, setPersonB] = useState("Tạ Quỳnh Trang");
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const personA = "Trần Đức Liêm";
+  const personB = "Tạ Quỳnh Trang";
   const [nicknameB, setNicknameB] = useState("");
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "numeric",
