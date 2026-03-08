@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contract_data: {
+        Row: {
+          clauses: Json
+          history: Json
+          id: number
+          penalties: Json
+          rewards: Json
+          updated_at: string
+        }
+        Insert: {
+          clauses?: Json
+          history?: Json
+          id?: number
+          penalties?: Json
+          rewards?: Json
+          updated_at?: string
+        }
+        Update: {
+          clauses?: Json
+          history?: Json
+          id?: number
+          penalties?: Json
+          rewards?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
