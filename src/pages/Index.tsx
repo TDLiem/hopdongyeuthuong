@@ -35,20 +35,26 @@ const Index = () => {
     year: "numeric",
   });
 
+  const addHistoryEntry = (action: string) => {
+    const now = new Date().toLocaleString("vi-VN");
+    setHistory((prev) => [{ action, timestamp: now }, ...prev].slice(0, 10));
+  };
+
   const updateClause = (index: number, text: string) => {
     setClauses((prev) => prev.map((c, i) => (i === index ? { ...c, text } : c)));
+    addHistoryEntry(`Sửa điều khoản ${index + 1}`);
   };
 
   const addClause = () => {
     const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
     setClauses((prev) => [...prev, { emoji: randomEmoji, text: "Nhập điều khoản mới..." }]);
+    addHistoryEntry("Thêm điều khoản mới");
   };
 
   const removeClause = (index: number) => {
     setClauses((prev) => prev.filter((_, i) => i !== index));
+    addHistoryEntry(`Xóa điều khoản ${index + 1}`);
   };
-
-  const bothSigned = signatures.person1 && signatures.person2;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -89,14 +95,13 @@ const Index = () => {
                   <span className="text-2xl">💙</span>
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên A</span>
                   <p className="w-full text-center font-handwriting text-xl text-foreground">{personA}</p>
-                  {nicknameA && <p className="text-sm text-muted-foreground">{nicknameA}</p>}
                 </div>
                 <div className="flex flex-col items-center gap-2 bg-secondary/40 rounded-2xl p-4">
                   <span className="text-2xl">💗</span>
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bên B</span>
                   <p className="w-full text-center font-handwriting text-xl text-foreground">{personB}</p>
-                  {nicknameB && <p className="text-sm text-muted-foreground">{nicknameB}</p>}
                 </div>
+              </div>
               </div>
               <p className="font-handwriting text-lg text-foreground leading-relaxed text-center">
                 Hai bên đồng ý ký kết hợp đồng yêu thương này với tất cả tình yêu và sự chân thành 💕
@@ -138,35 +143,28 @@ const Index = () => {
               </button>
             </div>
 
-            {/* Signatures */}
+            {/* Update History */}
             <div className="border-t-2 border-dashed border-primary/20 pt-8">
               <h2 className="font-handwriting text-2xl text-primary font-semibold text-center mb-6 flex items-center justify-center gap-2">
-                <Heart size={20} fill="currentColor" />
-                Chữ Ký
-                <Heart size={20} fill="currentColor" />
+                <Clock size={20} />
+                Lịch Sử Cập Nhật
+                <Clock size={20} />
               </h2>
 
-              <div className="grid grid-cols-2 gap-8">
-                <SignaturePad
-                  label="Bên A (Anh/Em) 💙"
-                  onSign={(name) => setSignatures((s) => ({ ...s, person1: name }))}
-                />
-                <SignaturePad
-                  label="Bên B (Anh/Em) 💗"
-                  onSign={(name) => setSignatures((s) => ({ ...s, person2: name }))}
-                />
-              </div>
-
-              {bothSigned && (
-                <div className="mt-8 text-center animate-float">
-                  <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-6 py-3">
-                    <Sparkles className="text-primary" size={18} />
-                    <span className="font-handwriting text-xl text-primary font-semibold">
-                      Hợp đồng đã có hiệu lực! Yêu thương mãi mãi 💕
-                    </span>
-                    <Sparkles className="text-primary" size={18} />
-                  </div>
+              {history.length > 0 ? (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {history.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/30 rounded-lg px-3 py-2">
+                      <span className="text-primary">•</span>
+                      <span className="flex-1">{entry.action}</span>
+                      <span className="text-[10px] opacity-70">{entry.timestamp}</span>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <p className="text-center text-xs text-muted-foreground italic">
+                  Chưa có thay đổi nào được ghi nhận 💕
+                </p>
               )}
             </div>
           </div>
