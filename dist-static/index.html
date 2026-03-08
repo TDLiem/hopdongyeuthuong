@@ -9,11 +9,9 @@
 </head>
 <body>
 
-<!-- Floating Hearts -->
 <div class="hearts" id="hearts"></div>
 
 <div class="container">
-  <!-- Header -->
   <div class="header">
     <h1 class="handwriting">Hợp Đồng Yêu Thương</h1>
     <p class="date">
@@ -23,7 +21,6 @@
     </p>
   </div>
 
-  <!-- Contract Card -->
   <div class="card">
     <!-- Preamble -->
     <div class="preamble">
@@ -34,7 +31,7 @@
           <span class="label">Bên A</span>
           <span class="name handwriting">Trần Đức Liêm</span>
         </div>
-        <img src="https://raw.githubusercontent.com/USERNAME/hopdongyeuthuong/main/couple.jpg" alt="Couple" class="couple-img" onerror="this.style.display='none'">
+        <img src="couple.jpg" alt="Couple" class="couple-img" onerror="this.style.display='none'">
         <div class="party">
           <span style="font-size:1.5rem">💗</span>
           <span class="label">Bên B</span>
@@ -50,6 +47,7 @@
     <div>
       <h2 class="section-title handwriting">❤️ Các Điều Khoản</h2>
       <div id="clauses"></div>
+      <button class="add-btn" onclick="addItem('clauses','Điều')">＋ Thêm điều khoản mới</button>
     </div>
 
     <!-- Rewards -->
@@ -57,78 +55,246 @@
       <h2 class="section-title handwriting">🎁 Phần Thưởng & Chế Tài</h2>
       <h3 class="sub-title reward handwriting">🏆 Phần thưởng</h3>
       <div id="rewards"></div>
-      <h3 class="sub-title penalty handwriting">⚖️ Chế tài</h3>
+      <button class="add-btn small" onclick="addItem('rewards','Thưởng')">＋ Thêm phần thưởng</button>
+      <h3 class="sub-title penalty handwriting" style="margin-top:1rem">⚖️ Chế tài</h3>
       <div id="penalties"></div>
+      <button class="add-btn small" onclick="addItem('penalties','Chế tài')">＋ Thêm chế tài</button>
     </div>
 
-    <!-- Signatures -->
-    <div class="signatures">
-      <div>
-        <div class="sig-label">Bên A ký tên</div>
-        <div class="sig-line handwriting">Trần Đức Liêm</div>
-      </div>
-      <div>
-        <div class="sig-label">Bên B ký tên</div>
-        <div class="sig-line handwriting">Tạ Quỳnh Trang</div>
-      </div>
+    <!-- History -->
+    <div class="history-section">
+      <h2 class="section-title handwriting" style="justify-content:center">🕐 Lịch Sử Cập Nhật</h2>
+      <div id="history"></div>
     </div>
   </div>
 
-  <p class="footer">✨ Hợp đồng yêu thương — mãi mãi bên nhau ✨</p>
+  <p class="footer">✨ Click vào điều khoản để chỉnh sửa • Kéo ⠿ để di chuyển • Click ra ngoài để hủy ✨</p>
 </div>
 
 <script>
-// Date
-document.getElementById('today').textContent = new Date().toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' });
+// ── Default data ──
+const DEFAULTS = {
+  clauses: [
+    {emoji:'💕',text:'Luôn lắng nghe và thấu hiểu nhau, dù bất đồng cũng không la mắng'},
+    {emoji:'🌅',text:'Mỗi sáng thức dậy sẽ nhắn tin chúc ngày mới tốt lành'},
+    {emoji:'🫂',text:'Ôm nhau ít nhất 3 lần mỗi ngày (hoặc nhiều hơn càng tốt!)'},
+    {emoji:'🍽️',text:'Mỗi tuần cùng nhau nấu ít nhất 1 bữa ăn ngon'},
+    {emoji:'💌',text:'Không bao giờ đi ngủ khi đang giận nhau'},
+    {emoji:'🌙',text:'Chúc nhau ngủ ngon mỗi tối, kể cả khi xa nhau'},
+    {emoji:'🎁',text:'Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau'},
+    {emoji:'🌈',text:'Luôn nói "Anh/Em yêu em/anh" mỗi ngày, không bao giờ quên'},
+  ],
+  rewards: [
+    {emoji:'🎉',text:'Thực hiện tốt 1 tuần → Được đi ăn món yêu thích'},
+    {emoji:'🧸',text:'Thực hiện tốt 1 tháng → Được tặng quà bất ngờ'},
+    {emoji:'✈️',text:'Thực hiện tốt 3 tháng → Cùng nhau đi du lịch'},
+  ],
+  penalties: [
+    {emoji:'🧹',text:'Vi phạm 1 lần → Phải làm việc nhà 1 ngày'},
+    {emoji:'🍦',text:'Vi phạm 2 lần → Phải mua kem/trà sữa cho đối phương'},
+    {emoji:'💌',text:'Vi phạm 3 lần → Phải viết thư tay xin lỗi dài 1 trang'},
+  ],
+};
+const EMOJIS = ['💖','🌸','✨','🦋','🍰','🎀','💫','🌺'];
+const LABELS = { clauses:'Điều', rewards:'Thưởng', penalties:'Chế tài' };
 
-// Data
-const clauses = [
-  { emoji: '💕', text: 'Luôn lắng nghe và thấu hiểu nhau, dù bất đồng cũng không la mắng' },
-  { emoji: '🌅', text: 'Mỗi sáng thức dậy sẽ nhắn tin chúc ngày mới tốt lành' },
-  { emoji: '🫂', text: 'Ôm nhau ít nhất 3 lần mỗi ngày (hoặc nhiều hơn càng tốt!)' },
-  { emoji: '🍽️', text: 'Mỗi tuần cùng nhau nấu ít nhất 1 bữa ăn ngon' },
-  { emoji: '💌', text: 'Không bao giờ đi ngủ khi đang giận nhau' },
-  { emoji: '🌙', text: 'Chúc nhau ngủ ngon mỗi tối, kể cả khi xa nhau' },
-  { emoji: '🎁', text: 'Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau' },
-  { emoji: '🌈', text: 'Luôn nói "Anh/Em yêu em/anh" mỗi ngày, không bao giờ quên' },
-];
-const rewards = [
-  { emoji: '🎉', text: 'Thực hiện tốt 1 tuần → Được đi ăn món yêu thích' },
-  { emoji: '🧸', text: 'Thực hiện tốt 1 tháng → Được tặng quà bất ngờ' },
-  { emoji: '✈️', text: 'Thực hiện tốt 3 tháng → Cùng nhau đi du lịch' },
-];
-const penalties = [
-  { emoji: '🧹', text: 'Vi phạm 1 lần → Phải làm việc nhà 1 ngày' },
-  { emoji: '🍦', text: 'Vi phạm 2 lần → Phải mua kem/trà sữa cho đối phương' },
-  { emoji: '💌', text: 'Vi phạm 3 lần → Phải viết thư tay xin lỗi dài 1 trang' },
-];
+// ── State ──
+function load(key) {
+  try { const d = localStorage.getItem('contract-'+key); return d ? JSON.parse(d) : [...DEFAULTS[key]]; }
+  catch { return [...DEFAULTS[key]]; }
+}
+function save(key, data) { localStorage.setItem('contract-'+key, JSON.stringify(data)); }
 
-function renderList(items, containerId, prefix) {
-  const el = document.getElementById(containerId);
-  el.innerHTML = items.map((item, i) => `
-    <div class="clause">
-      <span class="emoji" style="animation-delay:${i * 0.3}s">${item.emoji}</span>
-      <div>
-        <div class="number">${prefix} ${i + 1}</div>
-        <p class="text handwriting">${item.text}</p>
-      </div>
+let data = { clauses: load('clauses'), rewards: load('rewards'), penalties: load('penalties') };
+let history = (() => { try { const h = localStorage.getItem('contract-history'); return h ? JSON.parse(h) : []; } catch { return []; } })();
+
+function addHistory(action) {
+  const now = new Date().toLocaleString('vi-VN');
+  history = [{ action, timestamp: now }, ...history].slice(0, 10);
+  localStorage.setItem('contract-history', JSON.stringify(history));
+  renderHistory();
+}
+
+// ── Drag state ──
+let dragKey = null, dragIdx = null, overIdx = null;
+
+// ── Editing state ──
+let editingKey = null, editingIdx = null;
+
+// ── Render ──
+function renderList(key) {
+  const container = document.getElementById(key);
+  const items = data[key];
+  const label = LABELS[key];
+  container.innerHTML = '';
+
+  items.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'clause-row' + (overIdx === i && dragKey === key && dragIdx !== i ? ' drag-over' : '');
+    row.draggable = true;
+
+    row.addEventListener('dragstart', e => {
+      dragKey = key; dragIdx = i;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => row.style.opacity = '0.4', 0);
+    });
+    row.addEventListener('dragend', () => {
+      row.style.opacity = '1';
+      if (dragKey === key && dragIdx !== null && overIdx !== null && dragIdx !== overIdx) {
+        const arr = data[key];
+        const [moved] = arr.splice(dragIdx, 1);
+        arr.splice(overIdx, 0, moved);
+        save(key, arr);
+        addHistory(`${label} ${dragIdx+1} → ${overIdx+1}`);
+      }
+      dragKey = null; dragIdx = null; overIdx = null;
+      renderList(key);
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+      if (overIdx !== i) { overIdx = i; renderList(key); }
+    });
+
+    // Grip
+    const grip = document.createElement('div');
+    grip.className = 'grip';
+    grip.textContent = '⠿';
+
+    // Clause content
+    const clause = document.createElement('div');
+    clause.className = 'clause';
+
+    const isEditing = editingKey === key && editingIdx === i;
+
+    if (isEditing) {
+      clause.innerHTML = `
+        <span class="emoji" style="animation-delay:${i*0.3}s">${item.emoji}</span>
+        <div class="clause-body">
+          <div class="number">${label} ${i+1}</div>
+          <div class="edit-row">
+            <input type="text" class="edit-input handwriting" value="${item.text.replace(/"/g,'&quot;')}" id="edit-input-${key}-${i}">
+            <button class="save-btn" onclick="saveEdit('${key}',${i})">✓</button>
+          </div>
+        </div>
+      `;
+      // Stop click-outside from firing when clicking inside clause
+      clause.addEventListener('mousedown', e => e.stopPropagation());
+    } else {
+      clause.innerHTML = `
+        <span class="emoji" style="animation-delay:${i*0.3}s">${item.emoji}</span>
+        <div class="clause-body">
+          <div class="number">${label} ${i+1}</div>
+          <div class="text-row">
+            <p class="text handwriting">${item.text}</p>
+            <button class="edit-btn" onclick="startEdit('${key}',${i})">✏️</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Delete button
+    const del = document.createElement('button');
+    del.className = 'del-btn';
+    del.textContent = '✕';
+    del.onclick = e => { e.stopPropagation(); removeItem(key, i); };
+
+    row.appendChild(grip);
+    row.appendChild(clause);
+    if (items.length > 1) row.appendChild(del);
+    container.appendChild(row);
+
+    // Focus input if editing
+    if (isEditing) {
+      const input = document.getElementById(`edit-input-${key}-${i}`);
+      if (input) {
+        input.focus();
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') saveEdit(key, i);
+          if (e.key === 'Escape') cancelEdit();
+        });
+      }
+    }
+  });
+}
+
+function renderHistory() {
+  const el = document.getElementById('history');
+  if (history.length === 0) {
+    el.innerHTML = '<p class="empty-history">Chưa có thay đổi nào được ghi nhận 💕</p>';
+    return;
+  }
+  el.innerHTML = history.map(h => `
+    <div class="history-entry">
+      <span class="history-dot">•</span>
+      <span class="history-action">${h.action}</span>
+      <span class="history-time">${h.timestamp}</span>
     </div>
   `).join('');
 }
 
-renderList(clauses, 'clauses', 'Điều');
-renderList(rewards, 'rewards', 'Thưởng');
-renderList(penalties, 'penalties', 'Chế tài');
+function renderAll() {
+  renderList('clauses');
+  renderList('rewards');
+  renderList('penalties');
+  renderHistory();
+}
+
+// ── Actions ──
+function startEdit(key, idx) {
+  editingKey = key; editingIdx = idx;
+  renderList(key);
+}
+
+function saveEdit(key, idx) {
+  const input = document.getElementById(`edit-input-${key}-${idx}`);
+  if (input && input.value.trim()) {
+    data[key][idx].text = input.value.trim();
+    save(key, data[key]);
+    addHistory(`Sửa ${LABELS[key]} ${idx+1}`);
+  }
+  editingKey = null; editingIdx = null;
+  renderList(key);
+}
+
+function cancelEdit() {
+  if (editingKey !== null) {
+    const key = editingKey;
+    editingKey = null; editingIdx = null;
+    renderList(key);
+  }
+}
+
+function addItem(key) {
+  const emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  data[key].push({ emoji, text: 'Nhập nội dung mới...' });
+  save(key, data[key]);
+  addHistory(`Thêm ${LABELS[key]} mới`);
+  renderList(key);
+}
+
+function removeItem(key, idx) {
+  addHistory(`Xóa ${LABELS[key]} ${idx+1}`);
+  data[key].splice(idx, 1);
+  save(key, data[key]);
+  renderList(key);
+}
+
+// Click outside to cancel edit (not save)
+document.addEventListener('mousedown', () => cancelEdit());
+
+// ── Init ──
+document.getElementById('today').textContent = new Date().toLocaleDateString('vi-VN', { day:'numeric', month:'long', year:'numeric' });
+renderAll();
 
 // Floating hearts
 const heartsEl = document.getElementById('hearts');
 for (let i = 0; i < 12; i++) {
-  const size = 10 + Math.random() * 16;
-  const div = document.createElement('div');
-  div.className = 'heart';
-  div.style.cssText = `left:${Math.random()*100}%;top:${20+Math.random()*60}%;animation-delay:${Math.random()*5}s;animation-duration:${3+Math.random()*4}s;`;
-  div.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="hsl(340 82% 65%)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-  heartsEl.appendChild(div);
+  const s = 10 + Math.random() * 16;
+  const d = document.createElement('div');
+  d.className = 'heart';
+  d.style.cssText = `left:${Math.random()*100}%;top:${20+Math.random()*60}%;animation-delay:${Math.random()*5}s;animation-duration:${3+Math.random()*4}s;`;
+  d.innerHTML = `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="hsl(340 82% 65%)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+  heartsEl.appendChild(d);
 }
 </script>
 </body>
