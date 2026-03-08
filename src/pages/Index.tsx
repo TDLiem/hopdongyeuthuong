@@ -28,7 +28,7 @@ const Index = () => {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const personA = "Trần Đức Liêm";
   const personB = "Tạ Quỳnh Trang";
-  const [nicknameB, setNicknameB] = useState("");
+  
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "numeric",
     month: "long",
