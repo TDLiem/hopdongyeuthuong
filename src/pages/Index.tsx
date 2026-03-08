@@ -22,9 +22,9 @@ const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "�
 const Index = () => {
   const [clauses, setClauses] = useState(defaultClauses);
   const [signatures, setSignatures] = useState<{ person1?: string; person2?: string }>({});
-  const [personA, setPersonA] = useState("");
+  const [personA, setPersonA] = useState("Trần Đức Liêm");
   const [nicknameA, setNicknameA] = useState("");
-  const [personB, setPersonB] = useState("");
+  const [personB, setPersonB] = useState("Tạ Quỳnh Trang");
   const [nicknameB, setNicknameB] = useState("");
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "numeric",
