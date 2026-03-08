@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hợp Đồng Yêu Thương 💕</title>
+  <meta name="description" content="Hợp đồng tình yêu dễ thương giữa hai người yêu nhau">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Floating Hearts -->
+<div class="hearts" id="hearts"></div>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="handwriting">Hợp Đồng Yêu Thương</h1>
+    <p class="date">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="hsl(340 82% 65%)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <span id="today"></span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="hsl(340 82% 65%)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </p>
+  </div>
+
+  <!-- Contract Card -->
+  <div class="card">
+    <!-- Preamble -->
+    <div class="preamble">
+      <div style="font-size:1.75rem;margin-bottom:0.5rem">✨</div>
+      <div class="parties">
+        <div class="party">
+          <span style="font-size:1.5rem">💙</span>
+          <span class="label">Bên A</span>
+          <span class="name handwriting">Trần Đức Liêm</span>
+        </div>
+        <img src="https://raw.githubusercontent.com/USERNAME/hopdongyeuthuong/main/couple.jpg" alt="Couple" class="couple-img" onerror="this.style.display='none'">
+        <div class="party">
+          <span style="font-size:1.5rem">💗</span>
+          <span class="label">Bên B</span>
+          <span class="name handwriting">Tạ Quỳnh Trang</span>
+        </div>
+      </div>
+      <p class="handwriting" style="font-size:1.1rem;line-height:1.6">
+        Hai bên đồng ý ký kết hợp đồng yêu thương với những nội dung sau💕
+      </p>
+    </div>
+
+    <!-- Clauses -->
+    <div>
+      <h2 class="section-title handwriting">❤️ Các Điều Khoản</h2>
+      <div id="clauses"></div>
+    </div>
+
+    <!-- Rewards -->
+    <div style="margin-top:1.5rem">
+      <h2 class="section-title handwriting">🎁 Phần Thưởng & Chế Tài</h2>
+      <h3 class="sub-title reward handwriting">🏆 Phần thưởng</h3>
+      <div id="rewards"></div>
+      <h3 class="sub-title penalty handwriting">⚖️ Chế tài</h3>
+      <div id="penalties"></div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="signatures">
+      <div>
+        <div class="sig-label">Bên A ký tên</div>
+        <div class="sig-line handwriting">Trần Đức Liêm</div>
+      </div>
+      <div>
+        <div class="sig-label">Bên B ký tên</div>
+        <div class="sig-line handwriting">Tạ Quỳnh Trang</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer">✨ Hợp đồng yêu thương — mãi mãi bên nhau ✨</p>
+</div>
+
+<script>
+// Date
+document.getElementById('today').textContent = new Date().toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' });
+
+// Data
+const clauses = [
+  { emoji: '💕', text: 'Luôn lắng nghe và thấu hiểu nhau, dù bất đồng cũng không la mắng' },
+  { emoji: '🌅', text: 'Mỗi sáng thức dậy sẽ nhắn tin chúc ngày mới tốt lành' },
+  { emoji: '🫂', text: 'Ôm nhau ít nhất 3 lần mỗi ngày (hoặc nhiều hơn càng tốt!)' },
+  { emoji: '🍽️', text: 'Mỗi tuần cùng nhau nấu ít nhất 1 bữa ăn ngon' },
+  { emoji: '💌', text: 'Không bao giờ đi ngủ khi đang giận nhau' },
+  { emoji: '🌙', text: 'Chúc nhau ngủ ngon mỗi tối, kể cả khi xa nhau' },
+  { emoji: '🎁', text: 'Ghi nhớ mọi ngày kỷ niệm và luôn tạo bất ngờ cho nhau' },
+  { emoji: '🌈', text: 'Luôn nói "Anh/Em yêu em/anh" mỗi ngày, không bao giờ quên' },
+];
+const rewards = [
+  { emoji: '🎉', text: 'Thực hiện tốt 1 tuần → Được đi ăn món yêu thích' },
+  { emoji: '🧸', text: 'Thực hiện tốt 1 tháng → Được tặng quà bất ngờ' },
+  { emoji: '✈️', text: 'Thực hiện tốt 3 tháng → Cùng nhau đi du lịch' },
+];
+const penalties = [
+  { emoji: '🧹', text: 'Vi phạm 1 lần → Phải làm việc nhà 1 ngày' },
+  { emoji: '🍦', text: 'Vi phạm 2 lần → Phải mua kem/trà sữa cho đối phương' },
+  { emoji: '💌', text: 'Vi phạm 3 lần → Phải viết thư tay xin lỗi dài 1 trang' },
+];
+
+function renderList(items, containerId, prefix) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map((item, i) => `
+    <div class="clause">
+      <span class="emoji" style="animation-delay:${i * 0.3}s">${item.emoji}</span>
+      <div>
+        <div class="number">${prefix} ${i + 1}</div>
+        <p class="text handwriting">${item.text}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderList(clauses, 'clauses', 'Điều');
+renderList(rewards, 'rewards', 'Thưởng');
+renderList(penalties, 'penalties', 'Chế tài');
+
+// Floating hearts
+const heartsEl = document.getElementById('hearts');
+for (let i = 0; i < 12; i++) {
+  const size = 10 + Math.random() * 16;
+  const div = document.createElement('div');
+  div.className = 'heart';
+  div.style.cssText = `left:${Math.random()*100}%;top:${20+Math.random()*60}%;animation-delay:${Math.random()*5}s;animation-duration:${3+Math.random()*4}s;`;
+  div.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="hsl(340 82% 65%)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+  heartsEl.appendChild(div);
+}
+</script>
+</body>
+</html>
