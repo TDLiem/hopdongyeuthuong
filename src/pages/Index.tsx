@@ -238,6 +238,7 @@ const Index = () => {
                   Thêm chế tài
                 </button>
               </div>
+            </div>
 
             {/* Update History */}
             <div className="border-t-2 border-dashed border-primary/20 pt-8">
