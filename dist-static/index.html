@@ -69,10 +69,15 @@
   </div>
 
   <p class="footer">✨ Click vào điều khoản để chỉnh sửa • Kéo ⠿ để di chuyển • Click ra ngoài để hủy ✨</p>
+  <p class="footer" style="margin-top:0.25rem;opacity:0.5;font-size:0.65rem">Dữ liệu được đồng bộ online — mọi thay đổi sẽ hiển thị cho tất cả mọi người</p>
 </div>
 
 <script>
-// ── Default data ──
+// ── API Config ──
+const API_URL = 'https://qlpbnkexymffxidgnaoi.supabase.co/functions/v1/contract-api';
+const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFscGJua2V4eW1mZnhpZGduYW9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5ODU4MjEsImV4cCI6MjA4ODU2MTgyMX0.g0h_ezSeZXFipIjtdfBPbHyRRfv__fPpZ-6pEmrubsI';
+
+// ── Default data (fallback if API fails) ──
 const DEFAULTS = {
   clauses: [
     {emoji:'💕',text:'Luôn lắng nghe và thấu hiểu nhau, dù bất đồng cũng không la mắng'},
@@ -99,20 +104,46 @@ const EMOJIS = ['💖','🌸','✨','🦋','🍰','🎀','💫','🌺'];
 const LABELS = { clauses:'Điều', rewards:'Thưởng', penalties:'Chế tài' };
 
 // ── State ──
-function load(key) {
-  try { const d = localStorage.getItem('contract-'+key); return d ? JSON.parse(d) : [...DEFAULTS[key]]; }
-  catch { return [...DEFAULTS[key]]; }
+let data = { clauses: [...DEFAULTS.clauses], rewards: [...DEFAULTS.rewards], penalties: [...DEFAULTS.penalties] };
+let history = [];
+let saving = false;
+
+// ── API Functions ──
+async function loadFromAPI() {
+  try {
+    const res = await fetch(API_URL, {
+      headers: { 'apikey': API_KEY, 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) throw new Error('API error');
+    const d = await res.json();
+    data.clauses = d.clauses || DEFAULTS.clauses;
+    data.rewards = d.rewards || DEFAULTS.rewards;
+    data.penalties = d.penalties || DEFAULTS.penalties;
+    history = d.history || [];
+    renderAll();
+  } catch (e) {
+    console.warn('Không tải được từ server, dùng dữ liệu mặc định:', e);
+  }
 }
-function save(key, data) { localStorage.setItem('contract-'+key, JSON.stringify(data)); }
 
-let data = { clauses: load('clauses'), rewards: load('rewards'), penalties: load('penalties') };
-let history = (() => { try { const h = localStorage.getItem('contract-history'); return h ? JSON.parse(h) : []; } catch { return []; } })();
-
-function addHistory(action) {
-  const now = new Date().toLocaleString('vi-VN');
-  history = [{ action, timestamp: now }, ...history].slice(0, 10);
-  localStorage.setItem('contract-history', JSON.stringify(history));
-  renderHistory();
+async function saveToAPI() {
+  if (saving) return;
+  saving = true;
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'apikey': API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clauses: data.clauses,
+        rewards: data.rewards,
+        penalties: data.penalties,
+        history: history
+      })
+    });
+  } catch (e) {
+    console.warn('Lỗi khi lưu lên server:', e);
+  }
+  saving = false;
 }
 
 // ── Drag state ──
@@ -120,6 +151,13 @@ let dragKey = null, dragIdx = null, overIdx = null;
 
 // ── Editing state ──
 let editingKey = null, editingIdx = null;
+
+function addHistory(action) {
+  const now = new Date().toLocaleString('vi-VN');
+  history = [{ action, timestamp: now }, ...history].slice(0, 10);
+  renderHistory();
+  saveToAPI();
+}
 
 // ── Render ──
 function renderList(key) {
@@ -144,7 +182,6 @@ function renderList(key) {
         const arr = data[key];
         const [moved] = arr.splice(dragIdx, 1);
         arr.splice(overIdx, 0, moved);
-        save(key, arr);
         addHistory(`${label} ${dragIdx+1} → ${overIdx+1}`);
       }
       dragKey = null; dragIdx = null; overIdx = null;
@@ -155,12 +192,10 @@ function renderList(key) {
       if (overIdx !== i) { overIdx = i; renderList(key); }
     });
 
-    // Grip
     const grip = document.createElement('div');
     grip.className = 'grip';
     grip.textContent = '⠿';
 
-    // Clause content
     const clause = document.createElement('div');
     clause.className = 'clause';
 
@@ -177,7 +212,6 @@ function renderList(key) {
           </div>
         </div>
       `;
-      // Stop click-outside from firing when clicking inside clause
       clause.addEventListener('mousedown', e => e.stopPropagation());
     } else {
       clause.innerHTML = `
@@ -192,7 +226,6 @@ function renderList(key) {
       `;
     }
 
-    // Delete button
     const del = document.createElement('button');
     del.className = 'del-btn';
     del.textContent = '✕';
@@ -203,7 +236,6 @@ function renderList(key) {
     if (items.length > 1) row.appendChild(del);
     container.appendChild(row);
 
-    // Focus input if editing
     if (isEditing) {
       const input = document.getElementById(`edit-input-${key}-${i}`);
       if (input) {
@@ -249,7 +281,6 @@ function saveEdit(key, idx) {
   const input = document.getElementById(`edit-input-${key}-${idx}`);
   if (input && input.value.trim()) {
     data[key][idx].text = input.value.trim();
-    save(key, data[key]);
     addHistory(`Sửa ${LABELS[key]} ${idx+1}`);
   }
   editingKey = null; editingIdx = null;
@@ -267,7 +298,6 @@ function cancelEdit() {
 function addItem(key) {
   const emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
   data[key].push({ emoji, text: 'Nhập nội dung mới...' });
-  save(key, data[key]);
   addHistory(`Thêm ${LABELS[key]} mới`);
   renderList(key);
 }
@@ -275,16 +305,19 @@ function addItem(key) {
 function removeItem(key, idx) {
   addHistory(`Xóa ${LABELS[key]} ${idx+1}`);
   data[key].splice(idx, 1);
-  save(key, data[key]);
   renderList(key);
 }
 
-// Click outside to cancel edit (not save)
+// Click outside to cancel edit
 document.addEventListener('mousedown', () => cancelEdit());
 
 // ── Init ──
 document.getElementById('today').textContent = new Date().toLocaleDateString('vi-VN', { day:'numeric', month:'long', year:'numeric' });
 renderAll();
+loadFromAPI(); // Load from server, overwrite defaults
+
+// Auto-refresh every 30 seconds to sync changes from others
+setInterval(loadFromAPI, 30000);
 
 // Floating hearts
 const heartsEl = document.getElementById('hearts');
