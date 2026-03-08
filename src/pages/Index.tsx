@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Heart, Plus, Trash2, Sparkles, Check } from "lucide-react";
+import { Heart, Plus, Trash2, Sparkles, Check, X, Pencil } from "lucide-react";
 import ContractClause from "@/components/ContractClause";
 import FloatingHearts from "@/components/FloatingHearts";
 import coupleImg from "@/assets/couple-illustration.png";
@@ -19,20 +19,26 @@ const defaultClauses = [
 const emojiOptions = ["💖", "🌸", "✨", "🦋", "🍰", "🎀", "💫", "🌺"];
 
 interface ChangeLog {
-  person: "A" | "B";
   description: string;
   time: string;
 }
 
 const Index = () => {
-  const [clauses, setClauses] = useState(defaultClauses);
+  // approvedClauses = bản chính thức đang hiển thị
+  // draftClauses = bản nháp khi đang chỉnh sửa
   const [approvedClauses, setApprovedClauses] = useState(defaultClauses);
+  const [draftClauses, setDraftClauses] = useState<typeof defaultClauses | null>(null);
   const [personA] = useState("Trần Đức Liêm");
   const [nicknameA] = useState("");
   const [personB] = useState("Tạ Quỳnh Trang");
   const [nicknameB] = useState("");
   const [logsA, setLogsA] = useState<ChangeLog[]>([]);
   const [logsB, setLogsB] = useState<ChangeLog[]>([]);
+  const [approvedA, setApprovedA] = useState(false);
+  const [approvedB, setApprovedB] = useState(false);
+
+  const isEditing = draftClauses !== null;
+  const displayClauses = isEditing ? draftClauses : approvedClauses;
 
   const today = new Date().toLocaleDateString("vi-VN", {
     day: "numeric",
@@ -40,26 +46,20 @@ const Index = () => {
     year: "numeric",
   });
 
-  const hasPendingChanges = useMemo(() => {
-    if (clauses.length !== approvedClauses.length) return true;
-    return clauses.some(
-      (c, i) => c.text !== approvedClauses[i]?.text || c.emoji !== approvedClauses[i]?.emoji
-    );
-  }, [clauses, approvedClauses]);
-
   const getChangesDescription = (): string[] => {
+    if (!draftClauses) return [];
     const changes: string[] = [];
-    const maxLen = Math.max(clauses.length, approvedClauses.length);
+    const maxLen = Math.max(draftClauses.length, approvedClauses.length);
     for (let i = 0; i < maxLen; i++) {
-      if (!approvedClauses[i] && clauses[i]) {
-        changes.push(`Thêm: "${clauses[i].text.slice(0, 30)}..."`);
-      } else if (approvedClauses[i] && !clauses[i]) {
+      if (!approvedClauses[i] && draftClauses[i]) {
+        changes.push(`Thêm: "${draftClauses[i].text.slice(0, 30)}..."`);
+      } else if (approvedClauses[i] && !draftClauses[i]) {
         changes.push(`Xóa: "${approvedClauses[i].text.slice(0, 30)}..."`);
-      } else if (clauses[i]?.text !== approvedClauses[i]?.text) {
-        changes.push(`Sửa điều ${i + 1}: "${clauses[i].text.slice(0, 30)}..."`);
+      } else if (draftClauses[i]?.text !== approvedClauses[i]?.text) {
+        changes.push(`Sửa điều ${i + 1}: "${draftClauses[i].text.slice(0, 30)}..."`);
       }
     }
-    return changes.length > 0 ? changes : ["Không có thay đổi"];
+    return changes;
   };
 
   const formatTime = () =>
@@ -71,37 +71,58 @@ const Index = () => {
       year: "numeric",
     });
 
+  // Bắt đầu chỉnh sửa: copy approved → draft
+  const startEditing = () => {
+    setDraftClauses([...approvedClauses]);
+    setApprovedA(false);
+    setApprovedB(false);
+  };
+
+  // Huỷ bỏ: xoá draft, quay lại bản approved
+  const cancelEditing = () => {
+    setDraftClauses(null);
+    setApprovedA(false);
+    setApprovedB(false);
+  };
+
+  // Khi 1 bên bấm đồng ý
   const handleApprove = (person: "A" | "B") => {
-    if (!hasPendingChanges) return;
-    const changes = getChangesDescription();
-    const time = formatTime();
-    const newLog: ChangeLog = {
-      person,
-      description: changes.join("; "),
-      time,
-    };
-    if (person === "A") {
-      setLogsA((prev) => [newLog, ...prev]);
-    } else {
-      setLogsB((prev) => [newLog, ...prev]);
+    if (!isEditing) return;
+
+    if (person === "A") setApprovedA(true);
+    if (person === "B") setApprovedB(true);
+
+    // Kiểm tra nếu cả 2 đã đồng ý (bao gồm lần bấm hiện tại)
+    const bothNow = (person === "A" ? true : approvedA) && (person === "B" ? true : approvedB);
+
+    if (bothNow && draftClauses) {
+      const changes = getChangesDescription();
+      const time = formatTime();
+      const desc = changes.length > 0 ? changes.join("; ") : "Không có thay đổi";
+      setLogsA((prev) => [{ description: desc, time }, ...prev]);
+      setLogsB((prev) => [{ description: desc, time }, ...prev]);
+      setApprovedClauses([...draftClauses]);
+      setDraftClauses(null);
+      setApprovedA(false);
+      setApprovedB(false);
     }
-    setApprovedClauses([...clauses]);
   };
 
-  const updateClause = (index: number, text: string) => {
-    setClauses((prev) => prev.map((c, i) => (i === index ? { ...c, text } : c)));
+  const updateDraftClause = (index: number, text: string) => {
+    if (!draftClauses) return;
+    setDraftClauses((prev) => prev!.map((c, i) => (i === index ? { ...c, text } : c)));
   };
 
-  const addClause = () => {
+  const addDraftClause = () => {
+    if (!draftClauses) return;
     const randomEmoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
-    setClauses((prev) => [...prev, { emoji: randomEmoji, text: "Nhập điều khoản mới..." }]);
+    setDraftClauses((prev) => [...prev!, { emoji: randomEmoji, text: "Nhập điều khoản mới..." }]);
   };
 
-  const removeClause = (index: number) => {
-    setClauses((prev) => prev.filter((_, i) => i !== index));
+  const removeDraftClause = (index: number) => {
+    if (!draftClauses) return;
+    setDraftClauses((prev) => prev!.filter((_, i) => i !== index));
   };
-
-  const bothApproved = logsA.length > 0 && logsB.length > 0;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -154,43 +175,77 @@ const Index = () => {
 
             {/* Clauses */}
             <div className="space-y-3 mb-8">
-              <h2 className="font-handwriting text-2xl text-primary font-semibold flex items-center gap-2">
-                <Heart size={20} fill="currentColor" />
-                Các Điều Khoản
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="font-handwriting text-2xl text-primary font-semibold flex items-center gap-2">
+                  <Heart size={20} fill="currentColor" />
+                  Các Điều Khoản
+                </h2>
+                {!isEditing && (
+                  <button
+                    onClick={startEditing}
+                    className="px-4 py-1.5 rounded-full bg-secondary text-foreground text-sm font-medium hover:bg-secondary/80 transition-all flex items-center gap-1.5"
+                  >
+                    <Pencil size={14} />
+                    Chỉnh sửa
+                  </button>
+                )}
+                {isEditing && (
+                  <button
+                    onClick={cancelEditing}
+                    className="px-4 py-1.5 rounded-full bg-destructive/10 text-destructive text-sm font-medium hover:bg-destructive/20 transition-all flex items-center gap-1.5"
+                  >
+                    <X size={14} />
+                    Huỷ bỏ
+                  </button>
+                )}
+              </div>
 
-              {hasPendingChanges && (
+              {isEditing && (
                 <div className="text-xs text-accent font-medium bg-accent/10 rounded-xl px-3 py-2 text-center">
-                  ⚠️ Có thay đổi chưa được duyệt — cần cả hai bên xác nhận bên dưới
+                  ✏️ Đang chỉnh sửa — cần cả hai bên xác nhận bên dưới để lưu thay đổi
                 </div>
               )}
 
-              {clauses.map((clause, index) => (
+              {displayClauses.map((clause, index) => (
                 <div key={index} className="relative group">
-                  <ContractClause
-                    index={index}
-                    emoji={clause.emoji}
-                    text={clause.text}
-                    onUpdate={(text) => updateClause(index, text)}
-                  />
-                  {clauses.length > 1 && (
-                    <button
-                      onClick={() => removeClause(index)}
-                      className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all"
-                    >
-                      <Trash2 size={12} />
-                    </button>
+                  {isEditing ? (
+                    <>
+                      <ContractClause
+                        index={index}
+                        emoji={clause.emoji}
+                        text={clause.text}
+                        onUpdate={(text) => updateDraftClause(index, text)}
+                      />
+                      {displayClauses.length > 1 && (
+                        <button
+                          onClick={() => removeDraftClause(index)}
+                          className="absolute -right-2 -top-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-full bg-destructive text-destructive-foreground shadow-md hover:scale-110 transition-all"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex items-start gap-3 p-3 rounded-2xl bg-secondary/30">
+                      <span className="text-lg mt-0.5">{clause.emoji}</span>
+                      <p className="text-sm text-foreground leading-relaxed flex-1">
+                        <span className="font-semibold text-primary">Điều {index + 1}:</span>{" "}
+                        {clause.text}
+                      </p>
+                    </div>
                   )}
                 </div>
               ))}
 
-              <button
-                onClick={addClause}
-                className="w-full p-3 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium"
-              >
-                <Plus size={18} />
-                Thêm điều khoản mới
-              </button>
+              {isEditing && (
+                <button
+                  onClick={addDraftClause}
+                  className="w-full p-3 rounded-2xl border-2 border-dashed border-primary/30 text-primary hover:bg-secondary/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-medium"
+                >
+                  <Plus size={18} />
+                  Thêm điều khoản mới
+                </button>
+              )}
             </div>
 
             {/* Approval Section */}
@@ -209,11 +264,15 @@ const Index = () => {
                   </span>
                   <button
                     onClick={() => handleApprove("A")}
-                    disabled={!hasPendingChanges}
-                    className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-all flex items-center gap-2"
+                    disabled={!isEditing || approvedA}
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                      approvedA
+                        ? "bg-green-100 text-green-700 border border-green-300"
+                        : "bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40"
+                    }`}
                   >
                     <Check size={16} />
-                    Đồng ý thay đổi
+                    {approvedA ? "Đã đồng ý ✓" : "Đồng ý thay đổi"}
                   </button>
                   {logsA.length > 0 && (
                     <div className="w-full mt-2 space-y-1.5 max-h-32 overflow-y-auto">
@@ -235,11 +294,15 @@ const Index = () => {
                   </span>
                   <button
                     onClick={() => handleApprove("B")}
-                    disabled={!hasPendingChanges}
-                    className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-all flex items-center gap-2"
+                    disabled={!isEditing || approvedB}
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                      approvedB
+                        ? "bg-green-100 text-green-700 border border-green-300"
+                        : "bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40"
+                    }`}
                   >
                     <Check size={16} />
-                    Đồng ý thay đổi
+                    {approvedB ? "Đã đồng ý ✓" : "Đồng ý thay đổi"}
                   </button>
                   {logsB.length > 0 && (
                     <div className="w-full mt-2 space-y-1.5 max-h-32 overflow-y-auto">
@@ -255,7 +318,7 @@ const Index = () => {
                 </div>
               </div>
 
-              {bothApproved && (
+              {!isEditing && logsA.length > 0 && logsB.length > 0 && (
                 <div className="mt-8 text-center animate-float">
                   <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-6 py-3">
                     <Sparkles className="text-primary" size={18} />
@@ -272,7 +335,7 @@ const Index = () => {
 
         {/* Footer */}
         <p className="text-center text-muted-foreground text-xs mt-6 font-medium">
-          ✨ Click vào từng điều khoản để chỉnh sửa • Thêm hoặc xóa tùy ý ✨
+          ✨ Bấm "Chỉnh sửa" để thay đổi • Cả hai bên cùng đồng ý để lưu ✨
         </p>
       </div>
     </div>
