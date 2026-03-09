@@ -104,9 +104,10 @@ const EMOJIS = ['💖','🌸','✨','🦋','🍰','🎀','💫','🌺'];
 const LABELS = { clauses:'Điều', rewards:'Thưởng', penalties:'Chế tài' };
 
 // ── State ──
-let data = { clauses: [...DEFAULTS.clauses], rewards: [...DEFAULTS.rewards], penalties: [...DEFAULTS.penalties] };
+let data = { clauses: [], rewards: [], penalties: [] };
 let history = [];
 let saving = false;
+let loaded = false;
 
 // ── API Functions ──
 async function loadFromAPI() {
