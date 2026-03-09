@@ -7,7 +7,8 @@
   <meta name="description" content="Hợp đồng tình yêu dễ thương giữa hai người yêu nhau">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body style="opacity: 0; transition: opacity 0.3s ease;">
+<style>body.loaded { opacity: 1; }</style>
 
 <div class="hearts" id="hearts"></div>
 
@@ -104,9 +105,10 @@ const EMOJIS = ['💖','🌸','✨','🦋','🍰','🎀','💫','🌺'];
 const LABELS = { clauses:'Điều', rewards:'Thưởng', penalties:'Chế tài' };
 
 // ── State ──
-let data = { clauses: [...DEFAULTS.clauses], rewards: [...DEFAULTS.rewards], penalties: [...DEFAULTS.penalties] };
+let data = { clauses: [], rewards: [], penalties: [] };
 let history = [];
 let saving = false;
+let loaded = false;
 
 // ── API Functions ──
 async function loadFromAPI() {
@@ -120,10 +122,17 @@ async function loadFromAPI() {
     data.rewards = d.rewards || DEFAULTS.rewards;
     data.penalties = d.penalties || DEFAULTS.penalties;
     history = d.history || [];
-    renderAll();
   } catch (e) {
     console.warn('Không tải được từ server, dùng dữ liệu mặc định:', e);
+    if (!loaded) {
+      data.clauses = [...DEFAULTS.clauses];
+      data.rewards = [...DEFAULTS.rewards];
+      data.penalties = [...DEFAULTS.penalties];
+    }
   }
+  loaded = true;
+  document.body.classList.add('loaded');
+  renderAll();
 }
 
 async function saveToAPI() {
@@ -303,8 +312,8 @@ function addItem(key) {
 }
 
 function removeItem(key, idx) {
-  addHistory(`Xóa ${LABELS[key]} ${idx+1}`);
   data[key].splice(idx, 1);
+  addHistory(`Xóa ${LABELS[key]} ${idx+1}`);
   renderList(key);
 }
 
@@ -313,8 +322,7 @@ document.addEventListener('mousedown', () => cancelEdit());
 
 // ── Init ──
 document.getElementById('today').textContent = new Date().toLocaleDateString('vi-VN', { day:'numeric', month:'long', year:'numeric' });
-renderAll();
-loadFromAPI(); // Load from server, overwrite defaults
+loadFromAPI(); // Load from server first
 
 // Auto-refresh every 30 seconds to sync changes from others
 setInterval(loadFromAPI, 30000);
