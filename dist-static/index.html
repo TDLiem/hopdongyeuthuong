@@ -303,8 +303,8 @@ function addItem(key) {
 }
 
 function removeItem(key, idx) {
-  addHistory(`Xóa ${LABELS[key]} ${idx+1}`);
   data[key].splice(idx, 1);
+  addHistory(`Xóa ${LABELS[key]} ${idx+1}`);
   renderList(key);
 }
 
