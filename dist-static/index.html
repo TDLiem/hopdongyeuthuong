@@ -322,8 +322,7 @@ document.addEventListener('mousedown', () => cancelEdit());
 
 // ── Init ──
 document.getElementById('today').textContent = new Date().toLocaleDateString('vi-VN', { day:'numeric', month:'long', year:'numeric' });
-renderAll();
-loadFromAPI(); // Load from server, overwrite defaults
+loadFromAPI(); // Load from server first
 
 // Auto-refresh every 30 seconds to sync changes from others
 setInterval(loadFromAPI, 30000);
