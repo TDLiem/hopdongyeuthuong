@@ -121,10 +121,17 @@ async function loadFromAPI() {
     data.rewards = d.rewards || DEFAULTS.rewards;
     data.penalties = d.penalties || DEFAULTS.penalties;
     history = d.history || [];
-    renderAll();
   } catch (e) {
     console.warn('Không tải được từ server, dùng dữ liệu mặc định:', e);
+    if (!loaded) {
+      data.clauses = [...DEFAULTS.clauses];
+      data.rewards = [...DEFAULTS.rewards];
+      data.penalties = [...DEFAULTS.penalties];
+    }
   }
+  loaded = true;
+  document.body.classList.add('loaded');
+  renderAll();
 }
 
 async function saveToAPI() {
